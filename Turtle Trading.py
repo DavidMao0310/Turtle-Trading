@@ -38,7 +38,7 @@ data['ATR'] = ta.ATR(data['High'], data['Low'], data['Close'], timeperiod=20)
 data.dropna(inplace=True)
 
 
-def my_strategy(data):
+def look_strategy(data):
     x1 = data.Close > data.up
     x2 = data.Close.shift(1) < data.up.shift(1)
     x = x1 & x2
@@ -101,7 +101,7 @@ line = (
 
 )
 
-bd, bc, sd, sc = my_strategy(data)
+bd, bc, sd, sc = look_strategy(data)
 es1 = (
     EffectScatter()
         .add_xaxis(sd)
@@ -133,7 +133,7 @@ grid_chart.add(
 grid_chart.render('DC(withvolume).html')
 
 
-def strategy(stock, start, end, N1=20, N2=10):
+def test_strategy(stock, start, end, N1=20, N2=10):
     df = get_daily_data(stock, start, end)
     df['H_N1'] = ta.MAX(df.High, timeperiod=N1)
     df['L_N2'] = ta.MIN(df.Low, timeperiod=N2)
@@ -147,7 +147,6 @@ def strategy(stock, start, end, N1=20, N2=10):
     df1 = df.loc[d:].copy()
     df1['ret'][0] = 0
     df1['daily position size'][0] = 0
-    # 当仓位为1时，买入持仓，当仓位为0时，空仓，计算资金净值
     df1['Net Value on strategy'] = (df1.ret.values * df1['daily position size'].values + 1.0).cumprod()
     df1['Net Value on index'] = (df1.ret.values + 1.0).cumprod()
     df1['Return on strategy'] = df1['Net Value on strategy'] / df1['Net Value on strategy'].shift(1) - 1
@@ -180,7 +179,7 @@ Strategy_alpha:{round(alpha, 2)}, Strategy_beta:{round(beta, 2)} \nSharpe_ratio:
     ax.spines['right'].set_color('none')
     ax.spines['top'].set_color('none')
     plt.show()
-    # return df1.loc[:,['close','ret','H_N1','L_N2','daily position size','Net Value on strategy','Net Value on index']]
+    #return df1.loc[:,['close','ret','H_N1','L_N2','daily position size','Net Value on strategy','Net Value on index']]
 
 
-strategy(name1, start1, end1)
+test_strategy(name1, start1, end1)
